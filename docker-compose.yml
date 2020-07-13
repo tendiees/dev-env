@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  net:
+    image: busybox
+    hostname: shopee
+    network_mode: bridge
+    stop_grace_period: 1s
+    stop_signal: SIGKILL
+    command: "tail -f /dev/null"
+    ports:
+      - "5432:5432" # expose db
+
+  db:
+    image: postgres
+    network_mode: service:net
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
+
